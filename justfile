@@ -1,8 +1,8 @@
 # run nixvim
-r:
-  nix run .
+r *FILE:
+  nix run . -- {{FILE}}
 # check config
 c:
   nix flake check .
 i:
-  nix profile install .
+  nix profile remove nvx && nix profile add .
