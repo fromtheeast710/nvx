@@ -3,13 +3,33 @@
   ...
 }: {
   extraPlugins = with pkgs.vimPlugins; [
-    # vim-agda
     mini-files
     bigfile-nvim
     nvim-comment
     vim-startuptime
     diagflow-nvim
-  ];
+  ] ++ (with pkgs.vimUtils; [
+    (buildVimPlugin rec {
+      pname = "spaceless.nvim";
+      version = "unstable";
+      src = pkgs.fetchFromGitHub {
+        owner = "lewis6991";
+        repo = pname;
+        rev = "927fb0afb416ea39306af5842c247d810dfd5938";
+        hash = "sha256-t9wZ6ZYS42BDkJ2wcphcgqLobThyiCfGwhBVTdX7iGQ=";
+      };
+    })
+    # (buildVimPlugin rec {
+    #   pname = "nvim-agda";
+    #   version = "unstable";
+    #   src = pkgs.fetchFromGitHub {
+    #     owner = "ashinkarov";
+    #     repo = pname;
+    #     rev = "9024909ac5cbac0a0b6f1f3f7f2b65c907c8fc12";
+    #     hash = "";
+    #   };
+    # })
+  ]);
 
   extraConfigLua = ''
     require "which-key".add {
@@ -22,9 +42,9 @@
       },
       {
         mode = { "n" },
-        { "<C-j>",    "<cmd>BufferNext<cr>",               desc = "Next Buffer" },
-        { "<C-k>",    "<cmd>BufferPrevious<cr>",           desc = "Prev Buffer" },
-        { "<space>i", "<cmd>lua vim.lsp.buf.format()<cr>", desc = "Indent" },
+        { "<C-j>",    "<cmd>BufferPrevious<cr>",           desc = "Prev Buffer" },
+        { "<C-k>",    "<cmd>BufferNext<cr>",               desc = "Next Buffer" },
+        -- { "<space>i", "<cmd>lua vim.lsp.buf.format()<cr>", desc = "Indent" },
         { "<space>/", "<cmd>CommentToggle<cr>",            desc = "Comment" },
         { "<space>o", "<cmd>lua MiniFiles.open()<cr>",     desc = "Open File" },
         { "<space>f", "<cmd>Telescope find_files<cr>",     desc = "Find File" },
@@ -75,8 +95,11 @@
 
     require('diagflow').setup {
       show_borders = false,
-      placement = 'inline',
-      inline_padding_left = 3,
+      padding_right = 15,
+      max_width = 100,
+      max_height = 100,
+      text_align = 'left',
+      placement = 'top',
       format = function(diagnostic)
         return "▣ " .. diagnostic.message
       end
@@ -84,13 +107,38 @@
 
     -- TODO: use otter for correct comment in embedded code block
     require 'nvim_comment'.setup {}
+    require 'spaceless'.setup {}
 
     -- TODO: use treefmt to format
-    vim.api.nvim_create_autocmd("BufWritePre", {
+    local autocmd = vim.api.nvim_create_autocmd
+
+    autocmd("BufWritePre", {
       callback = function()
+        local excluded = {
+          ".*%.idr", ".*%.typ", "justfile",
+        }
+
+      	for _, pattern in ipairs(excluded) do
+          if vim.api.nvim_buf_get_name(0):match(pattern) then
+            return
+          end
+        end
+
         if #vim.lsp.get_clients({ bufnr = 0 }) > 0 then
           vim.lsp.buf.format()
         end
+      end
+    })
+
+    autocmd({ "FileType", "BufRead", "BufNewFile" }, {
+      pattern = { "markdown", "typst", "*" },
+      callback = function()
+        if vim.bo.buftype ~= "" then
+          return
+        end
+
+        vim.opt_local.spell = true
+        vim.cmd("syntax spell toplevel")
       end
     })
 

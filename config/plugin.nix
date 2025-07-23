@@ -1,5 +1,4 @@
 {
-  pkgs,
   lib,
   ...
 }: let
@@ -254,7 +253,7 @@ in {
       enable = true;
       settings = {
         multiwindow = true;
-        max_lines = 0;
+        max_lines = 5;
         min_window_height = 3;
         multiline_threshold = 3;
         trim_scope = "outer";
@@ -264,6 +263,7 @@ in {
       enable = true;
       settings.highlight.enable = true;
     };
+    # BUG: not saving sessions
     auto-session = {
       enable = true;
       settings = {
@@ -292,21 +292,31 @@ in {
         };
       };
     };
+    sniprun = {
+      enable = true;
+      settings.display = [
+        "VirtualTextOk"
+        "LongTempFloatingWindow"
+      ];
+    };
+    which-key = {
+      enable = true;
+      settings.preset = "helix";
+    };
     blink-cmp-git.enable = true;
     blink-cmp-spell.enable = true;
     blink-cmp-dictionary.enable = true;
+    illuminate.enable = true;
     luasnip.enable = true;
     typst-preview.enable = true;
     telescope.enable = true;
     otter.enable = true;
-    sniprun.enable = true;
     floaterm.enable = true;
     origami.enable = true;
     todo-comments.enable = true;
     nvim-autopairs.enable = true;
     web-devicons.enable = true;
     direnv.enable = true;
-    which-key.enable = true;
     colorizer.enable = true;
   };
 }

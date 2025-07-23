@@ -1,10 +1,21 @@
-{ ... }: {
+{ 
+  # inputs,
+  pkgs,
+  ...
+}: {
   enableMan = false;
 
+  extraPackages = with pkgs; [
+    nls
+    wordnet
+    luajitPackages.luautf8
+  ];
+
   imports = [
-    ./option.nix
     ./lsp.nix
-    ./plugin.nix
     ./extra.nix
+    ./plugin.nix
+    ./option.nix
+    ./performance.nix
   ];
 }

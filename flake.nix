@@ -6,12 +6,7 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs = {
-    nixvim,
-    treefmt,
-    flake-parts,
-    ...
-  } @ inputs:
+  outputs = inputs: with inputs;
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = [
         "x86_64-linux"
@@ -21,23 +16,16 @@
 
       imports = [inputs.treefmt.flakeModule];
 
-      perSystem = {
-        pkgs,
-        system,
-        ...
-      }: let
+      perSystem = { system, ... }: let
         nixvimLib = nixvim.lib.${system};
         nixvim' = nixvim.legacyPackages.${system};
         nixvimModule = {
           inherit system;
 
-          module = import ./config {
-            inherit pkgs;
-            lib = nixvim.lib;
-          };
+          module = import ./config { inherit pkgs; };
 
           extraSpecialArgs = {
-            # inherit inputs;
+            # inherit (foo) bar;
           };
         };
         nvim = nixvim'.makeNixvimWithModule nixvimModule;
@@ -51,18 +39,20 @@
             ormolu.enable = true;
             rustfmt.enable = true;
             alejandra.enable = true;
-            ocamlformat.enable = true;
+            # ocamlformat.enable = true;
             ruff-format.enable = true;
           };
         };
+
         formatter = treefmt.build.wrapper;
       in {
         checks = {
-          default = nixvimLib.check.mkTestDerivationFromNixvimModule nixvimModule;
+          default = 
+            nixvimLib.check.mkTestDerivationFromNixvimModule nixvimModule;
           format = treefmt.build.check;
         };
 
         packages.default = nvim;
       };
-    };
+  };
 }
