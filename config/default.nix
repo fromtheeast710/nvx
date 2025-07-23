@@ -6,7 +6,6 @@
   enableMan = false;
 
   extraPackages = with pkgs; [
-    nls
     wordnet
     luajitPackages.luautf8
   ];

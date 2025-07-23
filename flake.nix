@@ -22,7 +22,7 @@
         nixvimModule = {
           inherit system;
 
-          module = import ./config { inherit pkgs; };
+          module = import ./config;
 
           extraSpecialArgs = {
             # inherit (foo) bar;
