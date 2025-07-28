@@ -15,6 +15,7 @@
       ocamllsp.enable = true;
       tinymist.enable = true;
       hls.enable = true;
+      asm-lsp.enable = true;
       nickel_ls = {
         enable = true;
         # autostart = true;
