@@ -67,7 +67,8 @@ require('diagflow').setup {
   text_align = 'left',
   placement = 'top',
   format = function(diagnostic)
-    return "▣ " .. diagnostic.message
+    -- return "▣ " .. diagnostic.message
+    return diagnostic.message:gsub(" ", "_")
   end
 }
 
