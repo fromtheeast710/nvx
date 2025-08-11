@@ -60,16 +60,14 @@ require "mini.files".setup {
 require "bigfile".setup { filesize = 0.5 }
 
 require('diagflow').setup {
-  show_borders = false,
-  padding_right = 15,
+  show_borders = true,
+  padding_right = 3,
   max_width = 100,
   max_height = 100,
-  text_align = 'left',
   placement = 'top',
-  format = function(diagnostic)
-    -- return "▣ " .. diagnostic.message
-    return diagnostic.message:gsub(" ", "_")
-  end
+  -- format = function(diagnostic)
+  --   return diagnostic.message:gsub(" ", "_")
+  -- end
 }
 
 -- TODO: use otter for correct comment in embedded code block
@@ -85,8 +83,24 @@ autocmd("BufWritePre", {
       ".*%.idr", ".*%.typ", "justfile",
     }
 
+    local nix_fmt_files = {
+      ".*%.nix",
+    }
+
+    local filename = vim.api.nvim_buf_get_name(0)
+
     for _, pattern in ipairs(excluded) do
-      if vim.api.nvim_buf_get_name(0):match(pattern) then
+      if filename:match(pattern) then
+        return
+      end
+    end
+
+    -- HACK: not using nix fmt
+    for _, pattern in ipairs(nix_fmt_files) do
+      if filename:match(pattern) then
+        vim.cmd("silent! write")
+        vim.fn.system({ "alejandra", filename })
+        vim.cmd("edit!")
         return
       end
     end

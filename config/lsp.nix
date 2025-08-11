@@ -8,9 +8,12 @@
       # svelte.enable = true;
       just.enable = true;
       tailwindcss.enable = true;
+      scheme_langserver.enable = true;
       idris2_lsp.enable = true;
       lua_ls.enable = true;
       bashls.enable = true;
+      clangd.enable = true;
+      cssls.enable = true;
       rust_analyzer.enable = true;
       ocamllsp.enable = true;
       tinymist.enable = true;
@@ -24,9 +27,10 @@
       nixd = {
         enable = true;
         settings = {
-          options.nixvim.expr = /* nix */ ''
-            (builtins.getFlake "../flake.nix").packages.neovimNixvim.options
-          '';
+          options.nixvim.expr =
+            ''
+              (builtins.getFlake "../flake.nix").packages.neovimNixvim.options
+            '';
         };
       };
     };
