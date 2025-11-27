@@ -1,25 +1,50 @@
-{lib, ...}: let
+{
+  pkgs,
+  lib,
+  ...
+}: let
   inherit (lib.nixvim) mkRaw;
 in {
   plugins = {
+    luasnip = {
+      enable = true;
+      fromLua = [
+        {
+          paths = builtins.path {
+            path = ../snippet;
+          };
+        }
+      ];
+      settings = {
+        exit_roots = false;
+        keep_roots = true;
+        link_roots = true;
+        history = true;
+        delete_check_events = "TextChanged";
+        update_events = [
+          "TextChanged"
+          "TextChangedI"
+        ];
+      };
+    };
     blink-cmp = {
       enable = true;
       settings = {
+        snippets.preset = "luasnip";
         sources = {
           default = [
             "lsp"
             "path"
-            # "luasnip"
-            "snippets"
             "buffer"
             "spell"
+            "snippets"
             "dictionary"
-            "git"
+            # "git"
           ];
           providers = {
             git = {
               module = "blink-cmp-git";
-              name = "git";
+              name = "Git";
               score_offset = 100;
               opts = {
                 commit = {};
@@ -35,13 +60,6 @@ in {
             dictionary = {
               module = "blink-cmp-dictionary";
               name = "Dict";
-              score_offset = 100;
-              min_keyword_length = 3;
-              opts = {};
-            };
-            luasnip = {
-              module = "luasnip";
-              name = "Snippet";
               score_offset = 100;
               min_keyword_length = 3;
               opts = {};
@@ -90,6 +108,7 @@ in {
     treesitter = {
       enable = true;
       settings.highlight.enable = true;
+      grammarPackages = pkgs.vimPlugins.nvim-treesitter.passthru.allGrammars;
     };
     # BUG: not saving sessions
     auto-session = {
@@ -103,23 +122,23 @@ in {
         '';
       };
     };
-    gitsigns = {
-      enable = true;
-      settings = {
-        sign_priority = 100;
-        signs = {
-          delete = {
-            text = "│";
-          };
-          topdelete = {
-            text = "│";
-          };
-          changedelete = {
-            text = "│";
-          };
-        };
-      };
-    };
+    # gitsigns = {
+    #   enable = true;
+    #   settings = {
+    #     sign_priority = 100;
+    #     signs = {
+    #       delete = {
+    #         text = "│";
+    #       };
+    #       topdelete = {
+    #         text = "│";
+    #       };
+    #       changedelete = {
+    #         text = "│";
+    #       };
+    #     };
+    #   };
+    # };
     sniprun = {
       enable = true;
       settings.display = [
@@ -135,7 +154,6 @@ in {
     blink-cmp-spell.enable = true;
     blink-cmp-dictionary.enable = true;
     illuminate.enable = true;
-    luasnip.enable = true;
     typst-preview.enable = true;
     telescope.enable = true;
     otter.enable = true;

@@ -150,12 +150,12 @@ ins_left {
 --   color = { fg = colors.green, gui = 'bold' },
 -- }
 
-ins_right {
-  'fileformat',
-  fmt = string.upper,
-  icons_enabled = true,
-  color = { fg = colors.green, gui = 'bold' },
-}
+-- ins_right {
+--   'fileformat',
+--   fmt = string.upper,
+--   icons_enabled = true,
+--   color = { fg = colors.green, gui = 'bold' },
+-- }
 
 ins_right {
   'filesize',

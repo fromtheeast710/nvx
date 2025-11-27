@@ -8,17 +8,18 @@ require "which-key".add {
   },
   {
     mode = { "n" },
-    { "<C-j>",    "<cmd>BufferPrevious<cr>",       desc = "Prev Buffer" },
-    { "<C-k>",    "<cmd>BufferNext<cr>",           desc = "Next Buffer" },
+    { "<C-j>",    "<cmd>BufferPrevious<cr>",                                desc = "Prev Buffer" },
+    { "<C-k>",    "<cmd>BufferNext<cr>",                                    desc = "Next Buffer" },
     -- { "<space>i", "<cmd>lua vim.lsp.buf.format()<cr>", desc = "Indent" },
-    { "<space>/", "<cmd>CommentToggle<cr>",        desc = "Comment" },
-    { "<space>o", "<cmd>lua MiniFiles.open()<cr>", desc = "Open File" },
-    { "<space>f", "<cmd>Telescope find_files<cr>", desc = "Find File" },
-    { "<space>t", "<cmd>FloatermNew<cr>",          desc = "Float Term" },
-    { "<space>h", "<cmd>noh<cr>",                  desc = "No Hilight" },
-    { "<space>c", "<cmd>BufferClose<cr>",          desc = "Close Buffer" },
-    { "<space>a", "<cmd>HopChar2<cr>",             desc = "Jump" },
-    { "<space>q", ":wqa!<cr>",                     desc = "Quit" },
+    { "<space>/", "<cmd>CommentToggle<cr>",                                 desc = "Comment" },
+    { "<space>d", "<cmd>lua require('actions-preview').code_actions()<cr>", desc = "Comment" },
+    { "<space>o", "<cmd>lua MiniFiles.open()<cr>",                          desc = "Open File" },
+    { "<space>f", "<cmd>Telescope find_files<cr>",                          desc = "Find File" },
+    { "<space>t", "<cmd>FloatermNew<cr>",                                   desc = "Float Term" },
+    { "<space>h", "<cmd>noh<cr>",                                           desc = "No Hilight" },
+    { "<space>c", "<cmd>BufferClose<cr>",                                   desc = "Close Buffer" },
+    { "<space>a", "<cmd>HopChar2<cr>",                                      desc = "Jump" },
+    { "<space>q", "<cmd>AutoSession save<CR><cmd>wqa!<CR>",                 desc = "Quit" },
   },
   {
     mode = { "x" },
@@ -62,7 +63,7 @@ require "bigfile".setup { filesize = 0.5 }
 require('diagflow').setup {
   show_borders = true,
   padding_right = 3,
-  max_width = 100,
+  max_width = 50,
   max_height = 100,
   placement = 'top',
   -- format = function(diagnostic)
@@ -70,17 +71,89 @@ require('diagflow').setup {
   -- end
 }
 
+require("actions-preview").setup {
+  telescope = {
+    sorting_strategy = "ascending",
+    layout_strategy = "vertical",
+    layout_config = {
+      width = 0.8,
+      height = 0.9,
+      prompt_position = "top",
+      preview_cutoff = 20,
+      preview_height = function(_, _, max_lines)
+        return max_lines - 15
+      end,
+    },
+  },
+}
+
+require "leetcode".setup {
+  lang = "python3",
+  description = {
+    position = "right",
+  },
+}
+
 -- TODO: use otter for correct comment in embedded code block
-require 'nvim_comment'.setup {}
-require 'spaceless'.setup {}
+require "nvim_comment".setup {}
+require "spaceless".setup {}
+-- require 'nickel'.setup {}
+
+-- require "image".setup {
+--   integrations = {
+--     markdown = {
+--       resolve_image_path = function(document_path, image_path, fallback)
+--         return fallback(document_path, image_path)
+--       end,
+--     }
+--   }
+-- }
+
+require 'spin'.setup {
+  check_on_save = false,
+}
+
+require 'idris2'.setup {
+  client = {
+    hover = {
+      use_split = false,
+      split_size = '30%',
+      auto_resize_split = true,
+      split_position = 'right',
+      with_history = true,
+      use_as_popup = false,
+    },
+  },
+}
 
 -- TODO: use treefmt to format
 local autocmd = vim.api.nvim_create_autocmd
 
+autocmd("BufEnter", {
+  pattern = "*.idr",
+  callback = function()
+    local act = "<cmd>lua require(\"idris2.code_action\")"
+    local var = "<cmd>lua require(\"idris2.metavars\")"
+
+    require "which-key".add {
+      { "<space>i",  group = "Idris" },
+      { "<space>if", var .. ".request_all()<cr>",       desc = "Find All Holes" },
+      { "<space>is", act .. ".case_split()<cr>",        desc = "Split Case" },
+      { "<space>im", act .. ".make_case()<cr>",         desc = "Make Case" },
+      { "<space>iw", act .. ".make_with()<cr>",         desc = "Make With" },
+      { "<space>il", act .. ".make_lemma()<cr>",        desc = "Make Lemma" },
+      { "<space>ic", act .. ".add_clause()<cr>",        desc = "Add Clause" },
+      { "<space>ir", act .. ".refine_hole()<cr>",       desc = "Refine Hole" },
+      { "<space>ir", act .. ".expr_search_hints()<cr>", desc = "Refine Hole" },
+      { "<space>ii", act .. ".intro()<cr>",             desc = "Fill Hole" },
+    }
+  end,
+})
+
 autocmd("BufWritePre", {
   callback = function()
     local excluded = {
-      ".*%.idr", ".*%.typ", "justfile",
+      ".*%.idr", ".*%.typ", ".*%.vhd", "justfile",
     }
 
     local nix_fmt_files = {
@@ -101,6 +174,7 @@ autocmd("BufWritePre", {
         vim.cmd("silent! write")
         vim.fn.system({ "alejandra", filename })
         vim.cmd("edit!")
+
         return
       end
     end
