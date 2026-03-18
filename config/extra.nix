@@ -9,6 +9,17 @@
       diagflow-nvim
       leetcode-nvim
       # image-nvim
+
+      # (typst-preview-nvim.overrideAttrs {
+      #   version = "1.4.1-unstable-2026-03-13";
+      #
+      #   src = pkgs.fetchFromGitHub {
+      #     owner = "chomosuke";
+      #     repo = "typst-preview.nvim";
+      #     rev = "325036ee145ca51d9efb145c09ac16bce3bc8b7d";
+      #     hash = "sha256-7jOKLZ7WKBdX1Ljbvuuki4zmuZ86l62jAN8q2kSThDs=";
+      #   };
+      # })
     ]
     ++ (with pkgs.vimUtils; [
       (buildVimPlugin rec {
@@ -35,6 +46,16 @@
         };
       })
       (buildVimPlugin rec {
+        pname = "pest.vim";
+        version = "unstable";
+        src = pkgs.fetchFromGitHub {
+          owner = "pest-parser";
+          repo = pname;
+          rev = "7cfcb43f824e74d13dfe631359fff2ec23836a77";
+          hash = "sha256-EQcMSsKWtQvr0eQ6Hn0TtDA5Nc7VV0g2bnbx7i2B7u4=";
+        };
+      })
+      (buildVimPlugin rec {
         pname = "idris2-nvim";
         version = "unstable";
         src = pkgs.fetchFromGitHub {
@@ -55,6 +76,16 @@
           ]);
       })
       (buildVimPlugin rec {
+        pname = "spade-vim";
+        version = "unstable";
+        src = pkgs.fetchFromGitLab {
+          owner = "spade-lang";
+          repo = pname;
+          rev = "1016b4eafabaa75728569b1ba1bfbf8a849a4ec4";
+          hash = "sha256-U4LrO89wHRPQXjILI+tttbWk23TDS2kVPaJbSS33Xvc=";
+        };
+      })
+      (buildVimPlugin rec {
         pname = "vim-nickel";
         version = "unstable";
         src = pkgs.fetchFromGitHub {
@@ -72,6 +103,20 @@
           repo = pname + ".nvim";
           rev = "36513ad213855d497b7dd3391a24d1d75d58e36f";
           hash = "sha256-rQjwlu5gQcOvxF72lr9ugPRl0W78wCWGWPhpN1oOMbs=";
+        };
+
+        buildInputs = with pkgs; [
+          diff-so-fancy
+        ];
+      })
+      (buildVimPlugin rec {
+        pname = "spade";
+        version = "unstable";
+        src = pkgs.fetchFromGitLab {
+          owner = "spade-lang";
+          repo = pname + "-vim";
+          rev = "1016b4eafabaa75728569b1ba1bfbf8a849a4ec4";
+          hash = "sha256-U4LrO89wHRPQXjILI+tttbWk23TDS2kVPaJbSS33Xvc=";
         };
 
         buildInputs = with pkgs; [

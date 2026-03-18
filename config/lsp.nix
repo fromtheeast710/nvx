@@ -46,9 +46,21 @@
         };
       };
       # ocamllsp.enable = true;
-      tinymist.enable = true;
-      hls.enable = true;
+      tinymist = {
+        enable = true;
+        package = null;
+        packageFallback = true;
+      };
+      hls = {
+        enable = true;
+        package = null;
+      };
       asm-lsp.enable = true;
+      pest_ls = {
+        enable = true;
+        package = null;
+        # filetypes = ["pest"];
+      };
       nickel_ls = {
         enable = true;
         # autostart = true;

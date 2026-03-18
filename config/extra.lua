@@ -113,6 +113,10 @@ require 'spin'.setup {
   check_on_save = false,
 }
 
+require 'pest-vim'.setup {}
+
+-- require 'spade-vim'.setup {}
+
 require 'idris2'.setup {
   client = {
     hover = {
@@ -194,6 +198,13 @@ autocmd({ "FileType", "BufRead", "BufNewFile" }, {
 
     vim.opt_local.spell = true
     vim.cmd("syntax spell toplevel")
+  end
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "spade", "pest" },
+  callback = function()
+    vim.opt_local.spell = false
   end
 })
 
